@@ -10,7 +10,7 @@
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
+                    <el-button type="primary" @click.native="handleAdd">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -20,36 +20,31 @@
                   style="width: 100%;">
             <el-table-column type="selection" width="55">
             </el-table-column>
-            <el-table-column type="ID" prop="user_Id" width="75" label="ID" sortable>
+            <el-table-column prop="name" label="联系人" width="100">
             </el-table-column>
-            <el-table-column prop="name" label="用户名" width="100">
+            <el-table-column prop="industry" label="公司" width="200">
             </el-table-column>
-            <el-table-column prop="status" label="账户" :formatter="formatStatus" width="100">
+            <el-table-column prop="telephone" label="手机" min-width="100" sortable>
             </el-table-column>
-            <el-table-column prop="sex" label="性别" width="80" :formatter="formatSex">
+            <el-table-column prop="landlineTelephone" label="办公电话" width="125">
             </el-table-column>
-            <el-table-column prop="nickname" label="花名" width="120">
+            <el-table-column prop="fax" label="传真" width="125">
             </el-table-column>
-            <el-table-column prop="password" label="密码" width="70">
+            <el-table-column prop="email" label="邮箱" width="170">
             </el-table-column>
-            <el-table-column prop="email" label="邮箱" width="200">
+            <el-table-column prop="origin" label="来源" width="120" sortable>
             </el-table-column>
-            <el-table-column prop="telephone" label="电话" width="125">
+            <el-table-column prop="address" label="地址" width="180" >
             </el-table-column>
-            <el-table-column prop="weixinid" label="微信ID" width="125">
+            <el-table-column prop="zipCode" label="邮编" width="100" sortable>
             </el-table-column>
-            <el-table-column prop="birthday" label="生日" width="120" sortable>
+            <el-table-column prop="annualRevenue" label="注册资本" width="120">
             </el-table-column>
-            <el-table-column prop="address" label="地址" min-width="180" sortable>
+            <el-table-column prop="licencNo" label="执照号" width="120">
             </el-table-column>
-            <el-table-column prop="reg_Ip" label="注册ip" width="100" sortable>
+            <el-table-column prop="updateTime" label="最后编辑" width="120" sortable>
             </el-table-column>
-            <el-table-column prop="reg_Time" label="注册时间" width="120" sortable>
-            </el-table-column>
-            <el-table-column prop="last_Login_Time" label="最后登陆" width="120" sortable>
-            </el-table-column>
-
-            <el-table-column label="操作" width="150">
+            <el-table-column label="操作" width="150" fixed="right">
                 <template scope="scope">
                     <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                     <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
@@ -58,15 +53,22 @@
         </el-table>
 
         <!--工具条-->
-        <el-col :span="24" class="toolbar">
+        <el-col :span="24" class="block">
             <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20"
-                           :total="total" style="float:right;">
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="page"
+                :page-sizes="[20, 50, 100]"
+                :page-size="20"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                style="float:right;">
             </el-pagination>
         </el-col>
 
         <!--编辑界面-->
-        <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+        <el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="姓名" prop="name">
                     <el-input v-model="editForm.name" auto-complete="off"></el-input>
@@ -101,7 +103,7 @@
         </el-dialog>
 
         <!--新增界面-->
-        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+        <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
             <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
                 <el-form-item label="用户名" prop="name">
                     <el-input v-model="addForm.name" auto-complete="off"></el-input>
@@ -141,8 +143,7 @@
 
 <script>
     import util from '../../common/js/util'
-    //import NProgress from 'nprogress'
-    import {getUserListPage, removeUser, batchRemoveUser,  addUser,getIpHost} from '../../../api/api';
+    import {getCustomersByPage, delCustomer, batchRemoveUser,  addUser,getIpHost} from '../../../api/api';
 
     export default {
         data() {
@@ -265,6 +266,10 @@
                 this.page = val;
                 this.getUsers();
             },
+            handleSizeChange(val) {
+                this.pageSize = val;
+                this.getUsers();
+            },
             //获取用户列表
             getUsers() {
                 let para = {
@@ -276,10 +281,10 @@
                     console.log(res);
                 });
                 this.listLoading = true;
-                getUserListPage(para).then((res) => {
+                getCustomersByPage(para).then((res) => {
                     if (res.status === 0) {
-                        this.total = res.data.length;
-                        this.users = res.data;
+                        this.total = res.data.totalNum;
+                        this.users = res.data.itemList;
                         this.listLoading = false;
                         this.$message({
                             message: '加载成功',
@@ -300,10 +305,10 @@
                 }).then(() => {
                     this.listLoading = true;
                     debugger;
-                    var userId = {
-                        "userId": row.user_Id
+                    var customerId = {
+                        "customerId": row.customerId
                     };
-                    removeUser(userId).then((res) => {
+                    delCustomer(customerId).then((res) => {
                         this.listLoading = false;
                         if(res.status==0){
                             this.$message({

@@ -45,6 +45,7 @@
 </template>
 <script>
     import bus from '../common/bus'
+    import $ from 'jquery'
     import {getIpHost} from '../../api/api';
     export default {
         data() {
@@ -63,23 +64,29 @@
         },
         methods:{
             getIPAddress(){
-               /* getIpHost(null).then(res=>{
+                getIpHost(null).then(res=>{
                     console.log(res);
-                });*/
-                $.ajax({
+                });
+                /*$.ajax({
                     //要用post方式
                     type: "GET",
                     //方法所在页面和方法名
-                    url: "AjaxPage.aspx/ABC",
+                    url: "http://2018.ip138.com/ic.asp",
                     // data: "{abc:111}", //带参数的,参数名称abc,参数“111”
                     date:"{}",//没有参数的初始化
                     contentType: "application/json; charset=utf-8",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*!/!*;q=0.8");
+                        xhr.setRequestHeader("Cookie", "ASPSESSIONIDSCBCDTTS=JMHAPLJDELBFLJBDIIFBPCJB");
+                        xhr.setRequestHeader("Host", "2018.ip138.com");
+                        xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36");
+                    },
                     dataType: "json",
                     success: function(data) {
                         //返回的数据用data.d获取内容
                         alert(data);
                     }
-                });
+                });*/
             },
             // 用户名下拉菜单选择事件
             handleCommand(command) {

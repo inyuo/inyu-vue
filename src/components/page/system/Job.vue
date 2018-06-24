@@ -10,7 +10,7 @@
                     <el-button type="primary" v-on:click="loadData">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="handleAdd" disable=true>新增</el-button>
+                    <el-button type="primary" @click.native="handleAdd" disable=true>新增</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -26,29 +26,37 @@
             </el-table-column>
             <el-table-column prop="group" label="任务组" width="100">
             </el-table-column>
-            <el-table-column prop="quartz_Class" label="任务类名" width="250">
+            <el-table-column prop="quartzClass" label="任务类名" width="250">
             </el-table-column>
             <el-table-column prop="cron" label="表达式" width="110">
             </el-table-column>
-            <el-table-column prop="status" label="状态" width="105" :formatter="formatStatus" sortable>
-                <el-button size="small" type="info">${this.prop.status}</el-button>
+            <el-table-column prop="status" label="状态" width="105"
+                             :filters="[{ text: '运行', value: 0 }, { text: '暂停', value: 1 }]"
+                             :filter-method="filterTag"
+                             :formatter="formatStatus"
+                             sortable>
+                <template slot-scope="scope">
+                    <el-tag :type="scope.row.status === '0' ? 'primary' : 'success'"
+                            disable-transitions>
+                        {{scope.row.status}}</el-tag>
+                </template>
+               <!-- <template scope="scope" >
+                <el-button size="small" type="info" :formatter="formatStatus">
+                    {{scope.row.status}}'</el-button>
+                </template>-->
             </el-table-column>
             <el-table-column prop="msg" label="消息" width="205" sortable>
             </el-table-column>
 
             <el-table-column label="操作" width="300">
                 <template scope="scope">
-                    <el-button size="small" type="warning"
+                    <el-button size="small" type="warning" :disabled="scope.row.status === 1 "
                                @click="handlePause(scope.$index, scope.row)">暂停
                     </el-button>
 
-                    <el-button size="small" type="info"
+                    <el-button size="small" type="info"  :disabled="scope.row.status === 0 "
                                @click="handleResume(scope.$index, scope.row)">恢复
                     </el-button>
-
-                    <!-- <el-button size="small" type="danger"
-                                @click="handleDelete(scope.$index, scope.row)">删除
-                     </el-button>-->
 
                     <el-button size="small" type="success"
                                @click="handleEdit(scope.$index, scope.row)">修改
@@ -59,7 +67,7 @@
 
 
         <!--编辑界面-->
-        <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+        <el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="ID" prop="id" label-width="120px"   style="width:100%">
                     <el-input v-model="editForm.id" :disabled="true" auto-complete="off"></el-input>
@@ -79,7 +87,7 @@
         </el-dialog>
 
         <!--新增界面-->
-        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+        <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
             <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
                 <el-form-item label="任务名称" prop="name" label-width="120px" style="width:55%">
                     <el-input v-model="addForm.name" auto-complete="off"></el-input>
@@ -159,8 +167,7 @@
         },
         methods: {
             formatStatus: function (row, column) {
-                return row.status == 0 ? 'active' : 'pause';
-
+                return row.status == 0 ? '运行' : '暂停';
             },
             //从服务器读取数据
             loadData: function () {

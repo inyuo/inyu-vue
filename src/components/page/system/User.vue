@@ -10,13 +10,13 @@
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
+                    <el-button type="primary" @click.native="handleAdd">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
 
         <!--列表-->
-        <el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+        <el-table :data="users" stripe highlight-current-row v-loading="listLoading" @selection-change="selsChange"
                   style="width: 100%;">
             <el-table-column type="selection" width="55">
             </el-table-column>
@@ -60,13 +60,20 @@
         <!--工具条-->
         <el-col :span="24" class="toolbar">
             <el-button type="danger" v-on:click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20"
-                           :total="total" style="float:right;">
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="page"
+                :page-sizes="[20, 50, 100]"
+                :page-size="20"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                style="float:right;">
             </el-pagination>
         </el-col>
 
         <!--编辑界面-->
-        <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+        <el-dialog title="编辑"  :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="姓名" prop="name">
                     <el-input v-model="editForm.name" auto-complete="off"></el-input>
@@ -101,33 +108,33 @@
         </el-dialog>
 
         <!--新增界面-->
-        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-            <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-                <el-form-item label="用户名" prop="name">
+        <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false"  width="30%">
+            <el-form :model="addForm" :rules="addFormRules" ref="addForm">
+                <el-form-item label="用户名" prop="name" :label-width="formLabelWidth">
                     <el-input v-model="addForm.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input type="password" v-model.password="addForm.password" ></el-input>
+                <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
+                    <el-input type="password" v-model.password="addForm.password"  placeholder="888888" :disabled="true"></el-input>
                 </el-form-item>
-                <el-form-item label="性别">
-                    <el-radio-group v-model="addForm.sex">
+                <el-form-item label="性别" :label-width="formLabelWidth">
+                    <el-radio-group v-model="addForm.sex" :label-width="formLabelWidth">
                         <el-radio class="radio" :label="1">男</el-radio>
                         <el-radio class="radio" :label="0">女</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="花名">
+                <el-form-item label="花名" :label-width="formLabelWidth">
                     <el-input v-model="addForm.nickname"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱" prop="email">
+                <el-form-item label="邮箱" prop="email" :label-width="formLabelWidth">
                     <el-input v-model="addForm.email" auto-complete="on" ></el-input>
                 </el-form-item>
-                <el-form-item label="电话" prop="telephone">
+                <el-form-item label="电话" prop="telephone" :label-width="formLabelWidth">
                     <el-input v-model.telephone="addForm.telephone" type="number" ></el-input>
                 </el-form-item>
-                <el-form-item label="生日">
+                <el-form-item label="生日" :label-width="formLabelWidth">
                     <el-date-picker type="date" placeholder="选择日期" v-model="addForm.birthday"></el-date-picker>
                 </el-form-item>
-                <el-form-item label="地址">
+                <el-form-item label="地址" :label-width="formLabelWidth">
                     <el-input type="textarea" v-model="addForm.address"></el-input>
                 </el-form-item>
             </el-form>
@@ -240,6 +247,7 @@
                         {validator: checkEMail,  trigger: 'blur'}
                     ]
                 },
+                formLabelWidth: '80px',
                 //新增界面数据
                 addForm: {
                     name: '',
@@ -262,6 +270,16 @@
             },
             formatDate: function (row, column) {
                 return row.birthday == null ? 'NUll'  : getTime( row.birthday) ;
+            },
+            // 切换pageSize
+            handleSizeChange(val) {
+                this.pageSize = val;
+                this.getUsers();
+            },
+            // 换页
+            handleCurrentChange(val) {
+                this.page = val;
+                this.getUsers();
             },
 
             //获取用户列表
@@ -290,11 +308,6 @@
                         });
                     }
                 });
-            },
-            //换页
-            handleCurrentChange(val) {
-                this.page = val;
-                this.getUsers();
             },
             //删除
             handleDel: function (index, row) {

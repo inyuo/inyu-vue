@@ -18,17 +18,16 @@ function requestWrapper(method, url, data, params) {
     // logger.debug('method=%s, url=%s, params=%o, data=%o, headers=%o', method, url, params, data);
     return new Promise((resolve, reject) => {
         const tmp = superagent(method, url);
-        // 跨域请求
-        tmp.withCredentials();
         // 设置全局的超时时间
         if (globalConfig.api.timeout && !isNaN(globalConfig.api.timeout)) {
             tmp.timeout(globalConfig.api.timeout);
         }
-        // 默认的Content-Type和Accept
-
+        // 允许所有域名的脚本访问该资
         tmp.set('Access-Control-Allow-Origin', '*');
+        // 跨域请求
+        tmp.withCredentials();
         tmp.set('Access-Control-Allow-Credential', 'true');
-        tmp.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
+        tmp.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH');
         // url中是否有附加的参数?
         if (method == 'GET') {
             tmp.set('Accept', 'application/json');
@@ -54,30 +53,16 @@ function requestWrapper(method, url, data, params) {
 }
 
 //客户
-export const getCustomerList = params => {
+export const getCustomersByPage = params => {
     return requestWrapper('GET', `${globalConfig.getAPIPath()}${globalConfig.customer.getCustomerList}`, null, params);
 };
-export const getIpHost = params => {
+export const delCustomer = params => {
+    return requestWrapper('GET', `${globalConfig.getAPIPath()}${globalConfig.customer.delCustomer}`, null, params);
+};
 
-    /*  return new Promise((resolve, reject) => {
-          const sag = superagent('GET', 'http://2018.ip138.com/ic.asp');
-          sag.withCredentials();
-          // sag.set('Access-Control-Allow-Origin', '*');
-          sag.set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*!/!*;q=0.8');
-          sag.set('Cookie', 'ASPSESSIONIDQSTBTADS=HCFDMFIAAOMMKBMBHPJMOJFF');
-          sag.set('Host', '2018.ip138.com');
-          sag.query(params);
-          sag.end((err, res) => {
-              // logger.debug('err=%o, res=%o', err, res);
-              // 我本来在想, 要不要在这里把错误包装下, 即使请求失败也调用resolve, 这样上层就不用区分"网络请求成功但查询数据失败"和"网络失败"两种情况了
-              // 但后来觉得这个ajax方法是很底层的, 在这里包装不合适, 应该让上层业务去包装
-              if (res && res.body) {
-                  resolve(res.body);
-              } else {
-                  reject(err || res);
-              }
-          });
-      });*/
+// get ipHost
+export const getIpHost = params => {
+    return requestWrapper('GET', `http://ip.ws.126.net/ipquery`, null, params);
 };
 
 //用户
