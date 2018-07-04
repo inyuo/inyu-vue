@@ -49,18 +49,18 @@ module.exports = {
         batchremove:'user/removeUserList',     //批量删除用户
     },
     customer: {  // 登录相关配置
-        getCustomerList:'customer/list', //获取用户列表
-        addCustomer:'customer/add',     //添加用户
-        updateCustomer:'customer/update',     //添加用户
-        delCustomer:'customer/remove',     //添加用户
+        getCustomerList:'customer/list',    //获取用户列表
+        addCustomer:'customer/add',         //添加客户信息
+        updateCustomer:'customer/update',   //更新客户信息
+        delCustomer:'customer/remove',      //删除客户信息
     },
     job: {  // 登录相关配置
-        getJobList: 'quartz/list',    // 获取任务列表
-        addJob: 'quartz/add',  // 添加任务
-        pauseJob:'quartz/pausejob', //暂停任务
-        resumeJob:'quartz/resumejob',     //恢复任务
-        editJob:'quartz/edit',     //重新调度
-        deleteJob:'quartz/deletejob',     //删除任务
+        getJobList: 'quartz/list',   // 获取任务列表
+        addJob: 'quartz/add',        // 添加任务
+        pauseJob:'quartz/pausejob',  //暂停任务
+        resumeJob:'quartz/resumejob',//恢复任务
+        editJob:'quartz/edit',       //重新调度
+        deleteJob:'quartz/deletejob',//删除任务
     },
     ip:{
         getJobList: 'quartz/list',    // 获取任务列表

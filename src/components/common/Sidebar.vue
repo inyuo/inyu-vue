@@ -61,6 +61,10 @@
                             {
                                 index: 'customer',
                                 title: '客户管理'
+                            },
+                            {
+                                index: 'customerInfo',
+                                title: '客户详情'
                             }
                         ]
                     },

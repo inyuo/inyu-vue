@@ -11,10 +11,11 @@
   },
   "dependencies": {
     "axios": "^0.15.3",
-    "superagent": "^3.8.2",
     "babel-polyfill": "^6.23.0",
     "element-ui": "2.3.3",
+    "gt3-sdk": "^2.0.0",
     "mavon-editor": "^2.5.4",
+    "superagent": "^3.8.2",
     "vue": "^2.5.16",
     "vue-cropperjs": "^2.2.0",
     "vue-quill-editor": "3.0.6",

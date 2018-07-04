@@ -17,6 +17,7 @@
 
         <!--列表-->
         <el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+                  :row-class-name="tableRowClassName"
                   style="width: 100%;">
             <el-table-column type="selection" width="55">
             </el-table-column>
@@ -254,6 +255,15 @@
             }
         },
         methods: {
+            // 隔行换色
+            tableRowClassName({row, index}) {
+                if (index%2 === 1) {
+                    return 'warning-row';
+                } else if (index%2 === 0) {
+                    return 'success-row';
+                }
+                return '';
+            },
             //性别显示转换
             formatSex: function (row, column) {
                 return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
@@ -304,8 +314,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.listLoading = true;
-                    debugger;
-                    var customerId = {
+                    let customerId = {
                         "customerId": row.customerId
                     };
                     delCustomer(customerId).then((res) => {
@@ -428,5 +437,11 @@
 </script>
 
 <style scoped>
+    .el-table .warning-row {
+        background: #fdf6d2;
+    }
 
+    .el-table .success-row {
+        background: #f0f9eb;
+    }
 </style>

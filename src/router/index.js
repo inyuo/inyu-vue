@@ -87,6 +87,12 @@ export default new Router({
                     path: '/customer',
                     component: resolve => require(['../components/page/system/Customer.vue'], resolve),
                     meta: { title: '客户管理', permission: true }
+                },
+                {
+                    // 客户详情
+                    path: '/customerInfo',
+                    component: resolve => require(['../components/page/system/CustomerInfo.vue'], resolve),
+                    meta: { title: '客户详情', permission: true }
                 }
             ]
         },

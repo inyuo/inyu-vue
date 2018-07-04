@@ -48,7 +48,7 @@
             <el-table-column prop="msg" label="消息" width="205" sortable>
             </el-table-column>
 
-            <el-table-column label="操作" width="300">
+            <el-table-column label="操作" width="300" fixed="right">
                 <template scope="scope">
                     <el-button size="small" type="warning" :disabled="scope.row.status === 1 "
                                @click="handlePause(scope.$index, scope.row)">暂停

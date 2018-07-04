@@ -7,10 +7,17 @@
                     <el-input v-model="ruleForm.username" placeholder="username"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
+                    <el-input type="password" placeholder="password" v-model="ruleForm.password"
+                              @keyup.enter.native="submitForm('ruleForm')"></el-input>
+                </el-form-item>
+                <el-form-item prop="captcha">
+                    <div id="captcha">
+                        <div id="wait" class="show">正在加载验证码......</div>
+                    </div>
                 </el-form-item>
                 <el-form-item style="width:100%;">
-                    <el-button type="primary" style="width:45%;" @click.native.prevent="handleSubmit" :loading="logining">登录
+                    <el-button type="primary" style="width:45%;" @click.native.prevent="handleSubmit"
+                               :loading="logining">登录
                     </el-button>
                     <el-button style="width:45%;" @click.native.prevent="handleReset">注册</el-button>
                 </el-form-item>
@@ -20,9 +27,12 @@
 </template>
 
 <script>
-    import {requestLogin,getBingPic,getIpHost} from '../../api/api';
+    import {requestLogin, getBingPic, getIpHost} from '../../api/api';
+    import gt from "../../assets/geetest/gt";
+    import slid from "../../assets/geetest/slider";
+
     export default {
-        data: function(){
+        data: function () {
             return {
                 logining: false,
                 ruleForm: {
@@ -31,10 +41,10 @@
                 },
                 rules: {
                     username: [
-                        { required: true, message: '请输入用户名', trigger: 'blur' }
+                        {required: true, message: '请输入用户名', trigger: 'blur'}
                     ],
                     password: [
-                        { required: true, message: '请输入密码', trigger: 'blur' }
+                        {required: true, message: '请输入密码', trigger: 'blur'}
                     ]
                 },
                 checked: true
@@ -44,7 +54,7 @@
             handleReset() {
                 this.$refs.ruleForm.resetFields();
             },
-            getBackgroupPic(){
+            getBackgroupPic() {
                 getBingPic(null).then(res => {
                     console.log(res)
                     this.logining = false;
@@ -74,7 +84,7 @@
                                     type: 'error'
                                 });
                             } else {
-                                localStorage.setItem('ms_username',this.ruleForm.username);
+                                localStorage.setItem('ms_username', this.ruleForm.username);
                                 sessionStorage.setItem('user', JSON.stringify(res.data));
                                 this.$router.push('/');
                                 // this.$router.push({path: '/table'});
@@ -86,44 +96,48 @@
                     }
                 });
             }
-        },  mounted() {
+        }, mounted() {
             // this.getBackgroupPic();
         }
     }
 </script>
 
 <style scoped>
-    .login-wrap{
+    .login-wrap {
         position: relative;
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
     }
-    .ms-title{
+
+    .ms-title {
         position: absolute;
-        top:50%;
-        width:100%;
+        top: 50%;
+        width: 100%;
         margin-top: -230px;
         text-align: center;
-        font-size:30px;
+        font-size: 30px;
         color: #fff;
 
     }
-    .ms-login{
+
+    .ms-login {
         position: absolute;
-        left:50%;
-        top:50%;
-        width:300px;
-        height:160px;
-        margin:-150px 0 0 -190px;
-        padding:40px;
+        left: 50%;
+        top: 50%;
+        width: 300px;
+        height: 160px;
+        margin: -150px 0 0 -190px;
+        padding: 40px;
         border-radius: 5px;
         background: #fff;
     }
-    .login-btn{
+
+    .login-btn {
         text-align: center;
     }
-    .login-btn button{
-        width:100%;
-        height:36px;
+
+    .login-btn button {
+        width: 100%;
+        height: 36px;
     }
 </style>

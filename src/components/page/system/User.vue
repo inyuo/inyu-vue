@@ -17,6 +17,7 @@
 
         <!--列表-->
         <el-table :data="users" stripe highlight-current-row v-loading="listLoading" @selection-change="selsChange"
+                  :row-class-name="tableRowClassName"
                   style="width: 100%;">
             <el-table-column type="selection" width="55">
             </el-table-column>
@@ -30,9 +31,9 @@
             </el-table-column>
             <el-table-column prop="nickname" label="花名" width="120">
             </el-table-column>
-            <el-table-column prop="password" label="密码" width="100" >
+            <el-table-column prop="password" label="密码" width="200" >
             </el-table-column>
-            <el-table-column prop="email" label="邮箱" width="200">
+            <el-table-column prop="email" label="邮箱" width="150">
             </el-table-column>
             <el-table-column prop="telephone" label="电话" width="125">
             </el-table-column>
@@ -237,9 +238,6 @@
                     name: [
                         {validator: checkName, required: true, trigger: 'blur'},
                     ],
-                    password: [
-                        {validator: checkPass, required: true, trigger: 'blur'}
-                    ],
                     telephone: [
                         {validator: checkPhone,  trigger: 'blur'}
                     ],
@@ -261,6 +259,15 @@
             }
         },
         methods: {
+            // 隔行换色
+            tableRowClassName({row, rowIndex}) {
+                if (rowIndex === 1) {
+                    return 'warning-row';
+                } else if (rowIndex === 3) {
+                    return 'success-row';
+                }
+                return '';
+            },
             //性别显示转换
             formatSex: function (row, column) {
                 return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
@@ -317,7 +324,7 @@
                     this.listLoading = true;
                     debugger;
                     var userId = {
-                        "userId": row.user_Id
+                        "userId": row.userId
                     };
                     removeUser(userId).then((res) => {
                         this.listLoading = false;
@@ -363,10 +370,9 @@
                     if (valid) {
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
                             this.editLoading = true;
-                            //NProgress.start();
                             let para = Object.assign({}, this.editForm);
                             para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-                           /* editUser(para).then((res) => {
+                            editUser(para).then((res) => {
                                 this.editLoading = false;
                                 this.$message({
                                     message: '提交成功',
@@ -375,7 +381,7 @@
                                 this.$refs['editForm'].resetFields();
                                 this.editFormVisible = false;
                                 this.getUsers();
-                            });*/
+                            });
                         });
                     }
                 });
@@ -388,8 +394,9 @@
                             this.addLoading = true;
                             let para = Object.assign({}, this.addForm);
                             para.birthday = (!para.birthday || para.birthday == '') ? '' : util.formatDate.format(new Date(para.birthday), 'yyyy-MM-dd');
-
+                            debugger;
                             addUser(para).then((res) => {
+                                debugger;
                                 this.addLoading = false;
                                 if (res.status==0){
                                     this.$message({
@@ -452,5 +459,12 @@
 </script>
 
 <style scoped>
+    .el-table .warning-row {
+        background: oldlace;
+    }
+
+    .el-table .success-row {
+        background: #f0f9eb;
+    }
 
 </style>

@@ -18,16 +18,17 @@ function requestWrapper(method, url, data, params) {
     // logger.debug('method=%s, url=%s, params=%o, data=%o, headers=%o', method, url, params, data);
     return new Promise((resolve, reject) => {
         const tmp = superagent(method, url);
+        // 跨域请求
+        tmp.withCredentials();
         // 设置全局的超时时间
         if (globalConfig.api.timeout && !isNaN(globalConfig.api.timeout)) {
             tmp.timeout(globalConfig.api.timeout);
         }
-        // 允许所有域名的脚本访问该资
+        // 默认的Content-Type和Accept
+
         tmp.set('Access-Control-Allow-Origin', '*');
-        // 跨域请求
-        tmp.withCredentials();
         tmp.set('Access-Control-Allow-Credential', 'true');
-        tmp.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH');
+        tmp.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
         // url中是否有附加的参数?
         if (method == 'GET') {
             tmp.set('Accept', 'application/json');
@@ -56,8 +57,8 @@ function requestWrapper(method, url, data, params) {
 export const getCustomersByPage = params => {
     return requestWrapper('GET', `${globalConfig.getAPIPath()}${globalConfig.customer.getCustomerList}`, null, params);
 };
-export const delCustomer = params => {
-    return requestWrapper('GET', `${globalConfig.getAPIPath()}${globalConfig.customer.delCustomer}`, null, params);
+export const delCustomer = data => {
+    return requestWrapper('POST', `${globalConfig.getAPIPath()}${globalConfig.customer.delCustomer}`, data, null);
 };
 
 // get ipHost
@@ -70,9 +71,6 @@ export const requestLogin = data => {
     return requestWrapper('POST', `${globalConfig.getAPIPath()}${globalConfig.user.validate}`, data, null);
 };
 
-export const getUserList = params => {
-    return requestWrapper('GET', `${globalConfig.getAPIPath()}${globalConfig.user.getUserList}`, null, params);
-};
 
 export const getUserListPage = params => {
     return requestWrapper('GET', `${globalConfig.getAPIPath()}${globalConfig.user.getUserList}`, null, params);
